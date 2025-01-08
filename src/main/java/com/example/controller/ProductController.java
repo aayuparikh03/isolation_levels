@@ -1,24 +1,27 @@
 package com.example.controller;
 
-import com.example.service.NonRepeatableReadService;
+import com.example.entity.Product;
+import com.example.service.PhantomReadService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/non-repeatable-read")
+@RequestMapping("/phantom-read")
 public class ProductController {
-   private final NonRepeatableReadService nonRepeatableReadService;
+    private final PhantomReadService phantomReadService;
 
-    public ProductController(NonRepeatableReadService nonRepeatableReadService) {
-        this.nonRepeatableReadService = nonRepeatableReadService;
-    }
-    @GetMapping("/read/{id}")
-    public String readStockTwice(@PathVariable Long id)
-    {
-        return nonRepeatableReadService.readStockTwice(id);
-    }
-    @PostMapping("/update/{productId}/{newStock}")
-    public void updateStock(@PathVariable Long productId, @PathVariable int newStock) {
-        nonRepeatableReadService.updateStock(productId, newStock);
+    public ProductController(PhantomReadService phantomReadService) {
+        this.phantomReadService = phantomReadService;
     }
 
+    @GetMapping("/query")
+    public List<Product> queryProductsTwice() {
+        return phantomReadService.queryProductsTwice();
+    }
+
+    @PostMapping("/add")
+    public void addProduct(@RequestBody Product product) {
+        phantomReadService.addProduct(product);
+    }
 }
