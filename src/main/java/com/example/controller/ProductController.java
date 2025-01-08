@@ -1,25 +1,24 @@
 package com.example.controller;
 
-import com.example.service.DirtyReadService;
+import com.example.service.NonRepeatableReadService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/dirty-read")
+@RequestMapping("/non-repeatable-read")
 public class ProductController {
-    private final DirtyReadService dirtyReadService;
+   private final NonRepeatableReadService nonRepeatableReadService;
 
-    public ProductController(DirtyReadService dirtyReadService) {
-        this.dirtyReadService = dirtyReadService;
-    }
-    @PutMapping("/update/{id}/{stock}")
-    public void updateStock(@PathVariable Long id,@PathVariable int stock)
-    {
-        dirtyReadService.updateStocks(id,stock);
+    public ProductController(NonRepeatableReadService nonRepeatableReadService) {
+        this.nonRepeatableReadService = nonRepeatableReadService;
     }
     @GetMapping("/read/{id}")
-    public int readStocks(@PathVariable Long id)
+    public String readStockTwice(@PathVariable Long id)
     {
-        return dirtyReadService.readStockUnCommitted(id);
-
+        return nonRepeatableReadService.readStockTwice(id);
     }
+    @PostMapping("/update/{productId}/{newStock}")
+    public void updateStock(@PathVariable Long productId, @PathVariable int newStock) {
+        nonRepeatableReadService.updateStock(productId, newStock);
+    }
+
 }
